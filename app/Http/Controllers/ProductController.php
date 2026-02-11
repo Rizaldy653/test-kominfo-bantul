@@ -11,11 +11,30 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $products = Product::paginate(10);
+        $products = QueryBuilder::for(Product::class)
+            ->allowedFilters([
+                AllowedFilter::exact('category', 'category_id'),
+                AllowedFilter::exact('supplier', 'supplier_id'),
+                AllowedFilter::partial('name', 'product_name'),
+                AllowedFilter::callback('price_min', fn ($q, $v) => $q->where('unit_price', '>=', $v)),
+                AllowedFilter::callback('price_max', fn ($q, $v) => $q->where('unit_price', '<=', $v)),
+                AllowedFilter::callback('stock_min', fn ($q, $v) => $q->where('units_in_stock', '>=', $v)),
+                AllowedFilter::callback('stock_max', fn ($q, $v) => $q->where('units_in_stock', '<=', $v)),
+            ])
+            ->allowedSorts(['product_name','unit_price','units_in_stock'])
+            ->allowedIncludes(['category','supplier'])
+            ->paginate(10)
+            ->appends($request->query());
 
-        return response()->json([
-            'success' => true,
-            'data' => $products
+         return response()->json([
+            'status' => 'success',
+            'meta' => [
+                'current_page' => $products->currentPage(),
+                'total' => $products->total(),
+                'per_page' => $products->perPage(),
+                'last_page' => $products->lastPage(),
+            ],
+            'data' => $products->items()
         ]);
     }
 
