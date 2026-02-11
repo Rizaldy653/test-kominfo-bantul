@@ -37,7 +37,7 @@
                 processing: true,
                 ajax: {
                     url: "{{ route('products.index') }}",
-                    dataSrc: data.data
+                    dataSrc: 'data.data'
                 },
                 columns: [{
                         data: null,
