@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('products', function (Blueprint $table) {
+            $table->foreign(['category_id'], 'products_category_id_fkey')->references(['category_id'])->on('categories')->onUpdate('no action')->onDelete('no action');
+            $table->foreign(['supplier_id'], 'products_supplier_id_fkey')->references(['supplier_id'])->on('suppliers')->onUpdate('no action')->onDelete('no action');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropForeign('products_category_id_fkey');
+            $table->dropForeign('products_supplier_id_fkey');
+        });
+    }
+};
