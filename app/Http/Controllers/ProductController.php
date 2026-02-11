@@ -80,7 +80,7 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => "Product added successfully",
+            'message' => 'Product added successfully',
             'product' => $product
         ]);
     }
