@@ -62,12 +62,16 @@ class Customer extends Model
 
 	public function getTopSpender()
 	{
-		$user = DB::table('users')
-			->join('orders', 'users.id', '=', 'orders.user_id')
-			->join('order_details', 'orders.order_id', '=', 'order_details.order_id')
-			->join('products', 'order_details.unit_price', '=', 'products.unit_price')
-			->get();
-
-		return $this->orders()->sum('freight');
+		return DB::table('customers as c')
+            ->join('orders as o', 'c.customer_id', '=', 'o.customer_id')
+            ->join('order_details as od', 'o.order_id', '=', 'od.order_id')
+            ->select(
+                'c.company_name as customer_name',
+                'c.country',
+                DB::raw('SUM(od.unit_price * od.quantity * (1 - od.discount)) as total_spending')
+            )
+            ->groupBy('c.customer_id', 'c.company_name', 'c.country')
+            ->orderByDesc('total_spending')
+            ->get();
 	}
 }
