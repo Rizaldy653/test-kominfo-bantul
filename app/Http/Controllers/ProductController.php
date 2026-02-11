@@ -64,7 +64,7 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $validate = $request->validate([
+        $validated = $request->validate([
             'product_name' => 'required',
             'supplier_id' => 'required',
             'category_id' => 'required',
@@ -76,10 +76,11 @@ class ProductController extends Controller
             'discontinued' => 'required',
         ]);
 
-        $product = $request-Product::create($validate);
+        $product = Product::create('$validated');
 
         return response()->json([
             'success' => true,
+            'message' => "Product added successfully",
             'product' => $product
         ]);
     }
